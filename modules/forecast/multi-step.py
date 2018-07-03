@@ -2,10 +2,12 @@ from pandas import DataFrame
 from pandas import Series
 from pandas import concat
 from pandas import read_csv
+import os
 from pandas import datetime
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.externals import joblib
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
@@ -174,9 +176,21 @@ def plot_forecasts(series, forecasts, n_test, n_lag=1, n_seq=1):
     pyplot.show()
 
 
+def save_model_scaler(model, scaler, name):
+    # serialize model to JSON
+    model_json = model.to_json()
+    with open(os.path.join(os.getcwd(), "models", name + '.json'), "w") as json_file:
+        json_file.write(model_json)
+    # serialize weights to HDF5
+    model.save_weights(os.path.join(os.getcwd(), "models", name + '.h5'))
+    joblib.dump(scaler, os.path.join(os.getcwd(), "models", name + '.pkl'))
+    print("Saved model to disk")
+
+
 # load dataset
 data_frame = get_data_frame('./data/1.csv')
-
+name_model_scaler = 'revenue_1_1'
+path_model_scaler = './models/' + name_model_scaler
 # preprocess data
 new_df = data_frame['2013-08-01':'2017-12-15']
 idx = pd.date_range('2013-08-01', '2017-12-15')
@@ -190,14 +204,18 @@ n_batch = 1
 n_neurons = 1
 # prepare data
 scaler, train, test = prepare_data(new_df, n_test, n_lag, n_seq)
+
 # fit model
 model = fit_lstm(train, n_lag, n_seq, n_batch, n_epochs, n_neurons)
+save_model_scaler(model, scaler , name_model_scaler)
 # make forecasts
+scaler_loaded = joblib.load(os.path.join(os.getcwd(), "models", name_model_scaler + '.pkl'))
 forecasts = make_forecasts(model, n_batch, train, test, n_lag, n_seq)
+
 # inverse transform forecasts and test
-forecasts = inverse_transform(forecasts, scaler)
+forecasts = inverse_transform(forecasts, scaler_loaded)
 actual = [row[n_lag:] for row in test]
-actual = inverse_transform(actual, scaler)
+actual = inverse_transform(actual, scaler_loaded)
 # evaluate forecasts
 evaluate_forecasts(actual, forecasts, n_lag, n_seq)
 # plot forecasts

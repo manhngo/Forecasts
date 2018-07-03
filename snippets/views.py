@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db import connection
-from modules.forecast.predict import make_predict
+from modules.forecast.predict import forecast
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -14,15 +14,15 @@ from django.views.decorators.csrf import csrf_exempt
 def get_forecast(request):
     print("cast")
     if request.method == 'GET':
-        result = make_predict(id_store=1, type=1)
+        result = forecast([100], name='revenue_1_1')
         return Response({'name': result}, status=status.HTTP_201_CREATED)
     if request.method == 'POST':
         cursor = connection.cursor()
         print(request.data)
-        type = request.data['type']
-        store = request.data['store']
+        object = request.data['object']
+        name = request.data['name']
 
-        result = make_predict(id_store=store, type=type)
+        result = forecast(object, name='revenue_1_1')
 
         context = {
             result
