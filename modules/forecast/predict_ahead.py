@@ -88,7 +88,6 @@ def fit_lstm(train, batch_size, nb_epoch, neurons):
 def forecast_lstm(model, batch_size, X):
     X = X.reshape(1, 1, len(X))
     yhat = model.predict(X, batch_size=batch_size)
-    print(yhat)
     return yhat[0, 0]
 
 
@@ -119,30 +118,46 @@ train, test = supervised_values[0:-n_test], supervised_values[-n_test:]
 scaler, train_scaled, test_scaled = scale(train, test)
 
 # fit the model
-lstm_model = fit_lstm(train_scaled, 1, 3000, 4)
+lstm_model = fit_lstm(train_scaled, 1, 100, 4)
 # forecast the entire training dataset to build up state for forecasting
 train_reshaped = train_scaled[:, 0].reshape(len(train_scaled), 1, 1)
 lstm_model.predict(train_reshaped, batch_size=1)
 
 # walk-forward validation on the test data
 predictions = list()
-for i in range(len(test_scaled)):
+for i in range(len(test_scaled) - 1):
     # make one-step forecast
     X, y = test_scaled[i, 0:-1], test_scaled[i, -1]
     yhat = forecast_lstm(lstm_model, 1, X)
     # invert scaling
     yhat = invert_scale(scaler, X, yhat)
     # invert differencing
-    yhat = inverse_difference(raw_values, yhat, len(test_scaled) + 1 - i)
+    # yhat = inverse_difference(raw_values, yhat, len(test_scaled) + 1 - i)
     # store forecast
     predictions.append(yhat)
     expected = raw_values[len(train) + i + 1]
     print('Month=%d, Predicted=%f, Expected=%f' % (i + 1, yhat, expected))
 
+seed = test_scaled[0, 0:-1]
+predictions2 = list()
+for i in range(len(test_scaled) - 1):
+    # make one-step forecast
+    yhat = forecast_lstm(lstm_model, 1, seed)
+    lstm_model.reset_states()
+    seed = numpy.array([yhat])
+    # invert scaling
+    yhat = invert_scale(scaler, seed, yhat)
+    # invert differencing
+    # yhat = inverse_difference(raw_values, yhat, len(test_scaled) + 1 - i)
+    # store forecast
+    predictions2.append(yhat)
+    expected = raw_values[len(train) + i + 1]
+    print('Month=%d, Predicted=%f, Expected=%f' % (i + 1, yhat, expected))
+
 # report performance
-rmse = sqrt(mean_squared_error(raw_values[-n_test:], predictions))
+rmse = sqrt(mean_squared_error(raw_values[-n_test + 1:], predictions2))
 print('Test RMSE: %.3f' % rmse)
 # line plot of observed vs predicted
-pyplot.plot(raw_values[-n_test:])
-pyplot.plot(predictions)
+pyplot.plot(raw_values[-n_test+1:])
+pyplot.plot(predictions2)
 pyplot.show()
