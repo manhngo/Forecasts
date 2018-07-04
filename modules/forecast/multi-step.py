@@ -189,7 +189,7 @@ def save_model_scaler(model, scaler, name):
 
 # load dataset
 data_frame = get_data_frame('./data/1.csv')
-name_model_scaler = 'revenue_1_1'
+name_model_scaler = 'revenue_1_2'
 path_model_scaler = './models/' + name_model_scaler
 # preprocess data
 new_df = data_frame['2013-08-01':'2017-12-15']
@@ -199,7 +199,7 @@ new_df = new_df.reindex(idx).interpolate()
 n_lag = 1
 n_seq = 30
 n_test = 30
-n_epochs = 100
+n_epochs = 1500
 n_batch = 1
 n_neurons = 1
 # prepare data

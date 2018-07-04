@@ -26,7 +26,7 @@ SECRET_KEY = 's%!w(cs^-+tfig=98ifr)dko&wg&!(i&j^-+2t+msngaqt08!8'
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',
-                 '172.16.1.147']
+                 '172.16.1.147', '76b82f96.ap.ngrok.io']
 
 
 # Application definition
@@ -77,12 +77,8 @@ WSGI_APPLICATION = 'Fsmart_API.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'sales_family_mart',
-        'USER': 'manh-nx',
-        'PASSWORD': 'Abc123456#',
-        'HOST': '172.16.0.40',
-        'PORT': '3306',
     }
 }
 
