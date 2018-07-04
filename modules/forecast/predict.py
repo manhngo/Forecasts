@@ -1,4 +1,6 @@
 import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 from pandas import read_csv, to_datetime
 from numpy import array
 from keras.models import model_from_json
@@ -28,8 +30,6 @@ def load_model(name):
     loaded_model.load_weights(weight_str)
     scaler = joblib.load(scaler_str)
     return loaded_model, scaler
-
-
 # make one forecast with an LSTM,
 def forecast_lstm(model, X, n_batch):
     # reshape input pattern to [samples, timesteps, features]
@@ -54,5 +54,5 @@ def forecast(last_object, name):
     return inv_scale
 
 
-if __name__ == "__main__":
-    print(forecast(179375488, 'revenue_1_1'))
+# if __name__ == "__main__":
+#     print(forecast(179375488, 'revenue_1_1'))
