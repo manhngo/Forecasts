@@ -2,6 +2,7 @@ import os
 from pandas import read_csv, to_datetime
 from numpy import array
 from keras.models import model_from_json
+from keras.backend import clear_session
 from django.conf import settings
 from sklearn.externals import joblib
 
@@ -44,10 +45,12 @@ def forecast(last_object, name):
     last_object = array([last_object])
     n_batch = 1
     result_forecast = forecast_lstm(model, last_object, n_batch)
+    clear_session()
     result_forecast = array(result_forecast)
     result_forecast = result_forecast.reshape(1, len(result_forecast))
 
     inv_scale = scaler.inverse_transform(result_forecast)
+    inv_scale = inv_scale.reshape(inv_scale.shape[1])
     return inv_scale
 
 

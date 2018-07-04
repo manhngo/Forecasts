@@ -21,11 +21,9 @@ def get_forecast(request):
         print(request.data)
         object = request.data['object']
         name = request.data['name']
-
-        result = forecast(object, name='revenue_1_1')
-
+        result = forecast(object, name=name)
         context = {
-            result
+            "result": result
         }
         return Response(context, status=status.HTTP_201_CREATED)
     return Response("something wrong", status=status.HTTP_400_BAD_REQUEST)
