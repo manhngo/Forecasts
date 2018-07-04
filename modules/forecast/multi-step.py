@@ -199,7 +199,7 @@ new_df = new_df.reindex(idx).interpolate()
 n_lag = 1
 n_seq = 30
 n_test = 30
-n_epochs = 1500
+n_epochs = 1000
 n_batch = 1
 n_neurons = 1
 # prepare data
