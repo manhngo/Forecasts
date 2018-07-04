@@ -5,8 +5,8 @@ from keras.models import model_from_json
 from django.conf import settings
 from sklearn.externals import joblib
 
-# forecast_folder = os.path.join(settings.BASE_DIR, "modules", "forecast")
-forecast_folder = os.getcwd()
+forecast_folder = os.path.join(settings.BASE_DIR, "modules", "forecast")
+# forecast_folder = os.getcwd()
 
 def get_data_frame(dir):
     df = read_csv(dir)
