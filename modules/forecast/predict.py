@@ -5,9 +5,8 @@ from keras.models import model_from_json
 from django.conf import settings
 from sklearn.externals import joblib
 
-
-forecast_folder = os.path.join(settings.BASE_DIR, "modules", "forecast")
-
+# forecast_folder = os.path.join(settings.BASE_DIR, "modules", "forecast")
+forecast_folder = os.getcwd()
 
 def get_data_frame(dir):
     df = read_csv(dir)
@@ -42,6 +41,7 @@ def forecast_lstm(model, X, n_batch):
 
 def forecast(last_object, name):
     model, scaler = load_model(name)
+    last_object = array([last_object])
     n_batch = 1
     result_forecast = forecast_lstm(model, last_object, n_batch)
     result_forecast = array(result_forecast)
@@ -49,3 +49,7 @@ def forecast(last_object, name):
 
     inv_scale = scaler.inverse_transform(result_forecast)
     return inv_scale
+
+
+if __name__ == "__main__":
+    print(forecast(179375488, 'revenue_1_1'))

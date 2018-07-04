@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 def get_forecast(request):
     print("cast")
     if request.method == 'GET':
-        result = forecast([100], name='revenue_1_1')
+        result = forecast(100, name='revenue_1_1')
         return Response({'name': result}, status=status.HTTP_201_CREATED)
     if request.method == 'POST':
         cursor = connection.cursor()
